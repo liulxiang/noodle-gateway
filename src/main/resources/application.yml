@@ -1,0 +1,69 @@
+server:
+  port: 8080
+# MQTT 服务配置
+mqtt:
+  server:
+    enabled: true
+    port: 1884
+    host: 0.0.0.0
+    websocket-port: 8883
+    max-message-size: 8192
+    keep-alive-timeout: 60
+    implementation: moquette
+  # MQTT客户端配置（用于连接外部MQTT服务器）
+  client:
+    enabled: true
+    broker-url: tcp://127.0.0.1:1884
+    client-id: protocol-server-client
+    username: 
+    password: 
+    keep-alive: 60
+    clean-session: true
+    auto-reconnect: true
+    reconnect-delay: 5000  # 重连延迟（毫秒）
+    max-reconnect-delay: 60000  # 最大重连延迟（毫秒）
+    topics:
+      - topic: "testtopic/+"  # 订阅的主题，支持通配符
+        qos: 1
+      - topic: "sensor/+/temperature"
+        qos: 1
+      - topic: "sensor/+/humidity"
+        qos: 1
+      - topic: "device/+/status"
+        qos: 0
+# 日志配置
+logging:
+  level:
+    com.noodle.app.collect.protocol: DEBUG
+    org.springframework.web: DEBUG
+    org.thymeleaf: DEBUG
+    root: INFO
+    # 添加Moquette MQTT服务器的DEBUG日志
+    com.noodle.app.collect.protocol.mqtt.MoquetteMqttServer: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/protocol-server.log
+
+# 应用配置
+spring:
+  application:
+    name: noodle-server
+  profiles:
+    active: local
+  main:
+    allow-bean-definition-overriding: true
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+      enabled: true
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML
+    encoding: UTF-8
+    cache: false
+  mvc:
+    throw-exception-if-no-handler-found: false
+    static-path-pattern: "/static/**"
