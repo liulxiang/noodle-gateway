@@ -1,7 +1,5 @@
 # 基于moquette 的MQTT协议服务器数据采集项目
-
-基于Spring Boot的多协议服务器，目前支持MQTT协议，集成多种数据存储方案（MySQL、Redis、InfluxDB）和RocketMQ消息队列。
-
+支持Spring Boot，目前支持MQTT协议，集成多种数据存储方案（MySQL、Redis、InfluxDB）和RocketMQ消息队列。
 ## 🏗️ 系统架构
 
 ```
