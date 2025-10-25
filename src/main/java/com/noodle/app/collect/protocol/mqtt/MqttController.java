@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.noodle.app.collect.protocol.ProtocolServer;
 
 /**
@@ -45,25 +44,6 @@ public class MqttController {
         status.put("connections", 0); // 暂时返回0，后续可以实现连接计数
         return status;
     }
-
-    /**
-     * 获取会话统计
-     */
-    @GetMapping("/sessions")
-    public Map<String, Object> getSessions() {
-        Map<String, Object> result = new HashMap<>();
-        try {
-            result.put("success", true);
-            // 现在只有Moquette实现，暂时返回0
-            result.put("totalSessions", 0);
-            result.put("activeSessions", 0); // 简化处理
-        } catch (Exception e) {
-            result.put("success", false);
-            result.put("error", e.getMessage());
-        }
-        return result;
-    }
-
     /**
      * 获取当前连接的客户端列表
      */
@@ -79,7 +59,6 @@ public class MqttController {
                 result.put("count", 0);
                 return result;
             }
-            
             // 获取连接的客户端列表
             // 现在只有Moquette实现
             if (mqttServer instanceof MoquetteMqttServer) {
@@ -98,54 +77,12 @@ public class MqttController {
         }
         return result;
     }
-
-    /**
-     * 发布消息到指定主题
-     */
-    @PostMapping("/publish")
-    public Map<String, Object> publishMessage(@RequestParam String topic, 
-                                             @RequestParam String message,
-                                             @RequestParam(defaultValue = "0") int qos) {
-        Map<String, Object> result = new HashMap<>();
-        try {
-            // 注意：此功能需要Moquette支持直接发布消息的接口
-            // 当前实现仅作为占位符
-            logger.info("Publishing message to topic '{}': {}", topic, message);
-            result.put("success", true);
-            result.put("topic", topic);
-            result.put("message", message);
-            result.put("qos", qos);
-            result.put("warning", "此功能需要Moquette支持直接发布消息的接口，当前仅作为占位符");
-        } catch (Exception e) {
-            result.put("success", false);
-            result.put("error", e.getMessage());
-            logger.error("Failed to publish message to topic '{}': {}", topic, e.getMessage());
-        }
-        return result;
-    }
-
-    /**
-     * 获取主题订阅信息
-     */
-    @GetMapping("/topics")
-    public Map<String, Object> getTopics() {
-        Map<String, Object> result = new HashMap<>();
-        try {
-            result.put("success", true);
-            result.put("totalTopics", 0); // 暂时返回0
-            result.put("topics", new HashMap<>());
-        } catch (Exception e) {
-            result.put("success", false);
-            result.put("error", e.getMessage());
-        }
-        return result;
-    }
     
     /**
      * 测试 MQTT 服务器写入数据
      * 该接口用于测试向 MQTT 服务器发布各种类型的数据
      */
-    @PostMapping("/test/publish")
+    @GetMapping("/test/publish")
     public Map<String, Object> testMqttPublish(
             @RequestParam(defaultValue = "test/sensor/temperature") String topic,
             @RequestParam(defaultValue = "25.6") String value,
@@ -250,7 +187,7 @@ public class MqttController {
     /**
      * 通过MQTT客户端发布消息
      */
-    @PostMapping("/client/publish")
+    @GetMapping("/client/publish")
     public Map<String, Object> publishClientMessage(@RequestParam String topic,
                                                    @RequestParam String message,
                                                    @RequestParam(defaultValue = "1") int qos) {
@@ -278,7 +215,7 @@ public class MqttController {
     /**
      * 手动连接MQTT客户端
      */
-    @PostMapping("/client/connect")
+    @GetMapping("/client/connect")
     public Map<String, Object> connectClient() {
         Map<String, Object> result = new HashMap<>();
         try {
@@ -424,9 +361,9 @@ public class MqttController {
     }
     
     /**
-     * 通过MQTT发布电表数据
+     * 通过MQTT发布电表数据 GET 方便测试
      */
-    @PostMapping("/meter/publish")
+    @GetMapping("/meter/publish")
     public Map<String, Object> publishMeterData(@RequestParam(defaultValue = "meter001") String deviceId,
                                               @RequestParam(defaultValue = "devices/meter/data") String topic) {
         Map<String, Object> result = new HashMap<>();
